@@ -9,8 +9,12 @@ function Countdown({ deadline }: { deadline: number }) {
     return () => clearInterval(id); // FINDING-7: no timer leak under StrictMode
   }, []);
   const ms = Math.max(0, deadline - now);
-  const m = Math.floor(ms / 60000), s = Math.floor((ms % 60000) / 1000);
-  return <div className="countdown" aria-live="polite">{m}:{String(s).padStart(2, "0")}<span> until cycle closes</span></div>;
+  const totalMin = Math.floor(ms / 60000), s = Math.floor((ms % 60000) / 1000);
+  // demo cycles (<60m) read as a departure clock m:ss; real monthly cycles roll up to Hh MMm so the mono column never overflows
+  const label = totalMin >= 60
+    ? `${Math.floor(totalMin / 60)}h ${String(totalMin % 60).padStart(2, "0")}m`
+    : `${totalMin}:${String(s).padStart(2, "0")}`;
+  return <div className="countdown" aria-live="polite">{label}<span> until cycle closes</span></div>;
 }
 
 export default function Board({ slug }: { slug: string }) {
@@ -105,7 +109,7 @@ export default function Board({ slug }: { slug: string }) {
           const occupied = s.state !== "evicted" && s.joinedAt != null;
           const empty = !occupied && s.state === "active_unpaid" && s.joinedAt == null;
           return (
-            <div key={s._id} role="listitem" className={`seat ${s.state}${empty ? " empty" : ""}${flipping[s._id] ? " flip" : ""}`}>
+            <div key={s._id} role="listitem" className={`seat ${empty ? "empty" : s.state}${flipping[s._id] ? " flip" : ""}`}>
               <span className="seat-label">{s.displayLabel}</span>
               <span className="seat-state">
                 {empty && "empty — join to claim"}
