@@ -3,8 +3,12 @@ import { httpAction } from "./_generated/server";
 import { api, components } from "./_generated/api";
 import { registerStaticRoutes } from "@convex-dev/static-hosting";
 import { agentmail } from "./emailRail";
+import { auth } from "./auth";
 
 const http = httpRouter();
+
+// Convex Auth routes (/api/auth/*) — owner/creator signin/signout/token. Members unaffected.
+auth.addHttpRoutes(http);
 
 // 1. AgentMail inbound webhook (Svix signature-checked + deduped inside handleWebhook)
 http.route({

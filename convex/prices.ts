@@ -2,16 +2,20 @@
 import { internalAction, action } from "./_generated/server";
 import { internal, components } from "./_generated/api";
 import { v } from "convex/values";
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { FirecrawlClient } from "@firecrawl/firecrawl-convex";
 
 const firecrawl = new FirecrawlClient(components.firecrawl);
 
-// Public wrapper: owner-token-gated (FINDING-9 — unauthenticated crawls would burn credits).
+// Public wrapper: owner-gated (FINDING-9 — unauthenticated crawls would burn credits).
+// Multi-tenant: caller must be signed in AND own this plan.
 export const scrapePlanPrice = action({
-  args: { planId: v.id("plans"), ownerToken: v.string() },
+  args: { planId: v.id("plans") },
   handler: async (ctx, args): Promise<{ ok: boolean; priceKobo?: number; reason?: string }> => {
-    const authed = await ctx.runQuery(internal.pricesDb.checkOwnerToken, { token: args.ownerToken });
-    if (!authed) return { ok: false, reason: "OWNER_ONLY" };
+    const uid = await getAuthUserId(ctx);
+    if (!uid) return { ok: false, reason: "OWNER_ONLY" };
+    const owns = await ctx.runQuery(internal.pricesDb.userOwnsPlan, { userId: uid, planId: args.planId });
+    if (!owns) return { ok: false, reason: "OWNER_ONLY" };
     return await ctx.runAction(internal.prices.scrapePlanPriceInternal, { planId: args.planId });
   },
 });
@@ -45,10 +49,10 @@ export const scrapePlanPriceInternal = internalAction({
 // FINDING-3 fix: add-plan-by-URL (PRD F2 / Demo S5) — scrape ANY public pricing URL,
 // return extracted candidates for the owner to pick from. Owner-gated like scrapePlanPrice.
 export const extractFromUrl = action({
-  args: { url: v.string(), ownerToken: v.string() },
+  args: { url: v.string() },
   handler: async (ctx, args): Promise<{ ok: boolean; candidates?: Array<{ plan_name: string; priceKobo: number }>; reason?: string }> => {
-    const authed = await ctx.runQuery(internal.pricesDb.checkOwnerToken, { token: args.ownerToken });
-    if (!authed) return { ok: false, reason: "OWNER_ONLY" };
+    const uid = await getAuthUserId(ctx);       // any signed-in user may crawl-to-create (pre-plan)
+    if (!uid) return { ok: false, reason: "OWNER_ONLY" };
     try {
       const doc = await firecrawl.scrape(ctx, args.url, {
         formats: ["markdown"], location: { country: "NG" }, onlyMainContent: true, timeout: 30000,

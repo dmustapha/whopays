@@ -1,7 +1,9 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
 
 export default defineSchema({
+  ...authTables,          // Convex Auth: users, authSessions, authAccounts, ... (owner identity)
   plans: defineTable({
     slug: v.string(),                    // url-safe id, e.g. "spotify-family-demo"
     name: v.string(),
@@ -17,7 +19,8 @@ export default defineSchema({
     anchorReadOnly: v.boolean(),         // anchor plan: no public joins; owner-enrolled seats
     inboxId: v.string(),                 // AgentMail inbox for this plan
     lastCrawlAt: v.optional(v.number()),
-  }).index("by_slug", ["slug"]),
+    ownerUserId: v.optional(v.id("users")), // multi-tenant: the Convex Auth user who created+owns this plan
+  }).index("by_slug", ["slug"]).index("by_owner", ["ownerUserId"]),
 
   seats: defineTable({
     planId: v.id("plans"),

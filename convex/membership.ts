@@ -1,7 +1,24 @@
 import { mutation, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { CODES, LIMITS, dayKey, normalizeEmail } from "./lib/shared";
+
+// Multi-tenant owner gate (per-plan). Members never hit this path.
+async function requirePlanOwner(ctx: any, planId: any) {
+  const uid = await getAuthUserId(ctx);
+  if (!uid) throw new Error(CODES.OWNER_ONLY);
+  const plan = await ctx.db.get(planId);
+  if (!plan) throw new Error("plan not found");
+  if (plan.ownerUserId !== uid) throw new Error(CODES.OWNER_ONLY);
+  return { uid, plan };
+}
+async function requireSeatOwner(ctx: any, seatId: any) {
+  const seat = await ctx.db.get(seatId);
+  if (!seat) throw new Error("seat not found");
+  await requirePlanOwner(ctx, seat.planId);
+  return seat;
+}
 
 // Public join — THE ONLY member-creating path for demo plans (NN-1, structural).
 export const joinWaitlist = mutation({
@@ -48,12 +65,9 @@ export const joinWaitlist = mutation({
 
 // Owner-enrollment — legal ONLY on anchorReadOnly plans (NN-1 guard w/ named codes).
 export const enrollSeat = mutation({
-  args: { ownerToken: v.string(), planId: v.id("plans"), seatIndex: v.number(), email: v.optional(v.string()) },
+  args: { planId: v.id("plans"), seatIndex: v.number(), email: v.optional(v.string()) },
   handler: async (ctx, args) => {
-    const s = await ctx.db.query("ownerSessions").withIndex("by_token", (q) => q.eq("token", args.ownerToken)).unique();
-    if (!s) throw new Error(CODES.OWNER_ONLY);
-    const plan = await ctx.db.get(args.planId);
-    if (!plan) throw new Error("plan not found");
+    const { plan } = await requirePlanOwner(ctx, args.planId);
     if (plan.isDemo) throw new Error(CODES.DEMO_SEATS_JOIN_ONLY);      // structural NN-1
     if (!plan.anchorReadOnly) throw new Error(CODES.DEMO_SEATS_JOIN_ONLY); // owner-enroll exists ONLY for the anchor surface
     const seat = await ctx.db.query("seats")
@@ -118,12 +132,9 @@ export const recordPayment = internalMutation({
 });
 
 export const confirmPayment = mutation({
-  args: { ownerToken: v.string(), seatId: v.id("seats") },
+  args: { seatId: v.id("seats") },
   handler: async (ctx, args) => {
-    const s = await ctx.db.query("ownerSessions").withIndex("by_token", (q) => q.eq("token", args.ownerToken)).unique();
-    if (!s) throw new Error(CODES.OWNER_ONLY);
-    const seat = await ctx.db.get(args.seatId);
-    if (!seat) throw new Error("seat not found");
+    const seat = await requireSeatOwner(ctx, args.seatId);
     await ctx.db.patch(args.seatId, { state: "active_paid", paidAt: Date.now() });
     const latest = await ctx.db.query("payments").withIndex("by_seat", (q) => q.eq("seatId", args.seatId)).order("desc").take(1);
     if (latest[0]) await ctx.db.patch(latest[0]._id, { status: "confirmed" });
@@ -134,12 +145,9 @@ export const confirmPayment = mutation({
 });
 
 export const reinstate = mutation({
-  args: { ownerToken: v.string(), seatId: v.id("seats") },
+  args: { seatId: v.id("seats") },
   handler: async (ctx, args) => {
-    const s = await ctx.db.query("ownerSessions").withIndex("by_token", (q) => q.eq("token", args.ownerToken)).unique();
-    if (!s) throw new Error(CODES.OWNER_ONLY);
-    const seat = await ctx.db.get(args.seatId);
-    if (!seat) throw new Error("seat not found");
+    const seat = await requireSeatOwner(ctx, args.seatId);
     await ctx.db.patch(args.seatId, { state: "active_paid", paidAt: Date.now() });
     await ctx.db.insert("events", { planId: seat.planId, at: Date.now(), type: "reinstated",
       publicText: `${seat.displayLabel} reinstated by owner after late payment` });
