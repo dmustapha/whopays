@@ -8,6 +8,8 @@
  * @module
  */
 
+import type * as ai from "../ai.js";
+import type * as emailRail from "../emailRail.js";
 import type * as lib_parse from "../lib/parse.js";
 import type * as lib_shared from "../lib/shared.js";
 import type * as membership from "../membership.js";
@@ -20,6 +22,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  ai: typeof ai;
+  emailRail: typeof emailRail;
   "lib/parse": typeof lib_parse;
   "lib/shared": typeof lib_shared;
   membership: typeof membership;
@@ -52,4 +56,8 @@ export declare const internal: FilterApi<
   FunctionReference<any, "internal">
 >;
 
-export declare const components: {};
+export declare const components: {
+  agentmail: import("@agentmail/convex/_generated/component.js").ComponentApi<"agentmail">;
+  firecrawl: import("@firecrawl/firecrawl-convex/_generated/component.js").ComponentApi<"firecrawl">;
+  staticHosting: import("@convex-dev/static-hosting/_generated/component.js").ComponentApi<"staticHosting">;
+};
