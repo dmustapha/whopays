@@ -3,8 +3,8 @@
 - **Project:** WhoPays
 - **Event:** Convex All Gas Hackathon
 - **What it does:** A live ledger for shared recurring bills — crawled real prices set each member's dues, members act entirely by email, and a scheduler enforces eviction and promotion while every screen live-syncs.
-- **Live app:** not deployed
-- **Repo:** private
+- **Live app:** https://resilient-goose-83.convex.site
+- **Repo:** https://github.com/dmustapha/whopays
 - **Frontend:** Convex static hosting
 - **Convex deployment:** https://resilient-goose-83.convex.cloud
 - **Components:** @agentmail/convex, @firecrawl/firecrawl-convex, @convex-dev/static-hosting
