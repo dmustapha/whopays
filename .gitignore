@@ -65,3 +65,6 @@ DEBUG-REPORT*.md
 STRESS-TEST*.md
 .ship-check.json
 .deploy-state.json
+public/video/
+video/out/
+video/audio/
