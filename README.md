@@ -4,12 +4,12 @@
 
 > The scheduler doesn't negotiate.
 
-[![Live](https://img.shields.io/badge/live-resilient--goose--83.convex.site-79c78d)](https://resilient-goose-83.convex.site)
+[![Live](https://img.shields.io/badge/live-beloved--minnow--486.convex.site-79c78d)](https://beloved-minnow-486.convex.site)
 [![Tests](https://img.shields.io/badge/tests-68%2F68-79c78d)](#tests)
 [![Convex](https://img.shields.io/badge/backend-Convex-f0a92e)](https://www.convex.dev)
 [![License](https://img.shields.io/badge/license-MIT-8f8a80)](LICENSE)
 
-**Live app:** https://resilient-goose-83.convex.site (open the board, join a seat with one email, watch it settle)
+**Live app:** https://beloved-minnow-486.convex.site (open the board, join a seat with one email, watch it settle)
 
 ![WhoPays board](screenshots/board-1440.png)
 
@@ -101,7 +101,7 @@ Only recompute-stable numbers are pinned; volatile counts are recomputed live an
 | Claim | Status | Evidence |
 |-------|--------|----------|
 | Demo price ₦2,500 (250000 kobo) | VERIFIED, real Firecrawl crawl of the public Spotify NG page | `npm run proof:public` re-derives it from the public page with zero access to our infra |
-| Hero loop (join → evict → promote → dues → PAID → green) | VERIFIED live on `resilient-goose-83` | `submission/proof.md` transcript |
+| Hero loop (join → evict → promote → dues → PAID → green) | VERIFIED live on `beloved-minnow-486` | `submission/proof.md` transcript |
 | 4/4 sponsors load-bearing | VERIFIED by ablation | `submission/proof.md` ablation runs |
 | Per-plan IDOR enforced | VERIFIED | `scripts/e2e-multitenant.ts` → 7/7 |
 | Real payment processing (Paystack/PSP) | NOT BUILT, out of scope by design | `LIMITATIONS.md` |
@@ -117,7 +117,7 @@ curl -s https://www.spotify.com/ng/premium/ | grep -c '₦2,500'   # → 2
 Or run the bundled proof, which re-derives the figure from the live board's `/api/proof` and re-checks it against the public page:
 
 ```bash
-SITE_HOST=resilient-goose-83.convex.site npm run proof:public     # → PUBLIC PROOF: PASS
+SITE_HOST=beloved-minnow-486.convex.site npm run proof:public     # → PUBLIC PROOF: PASS
 ```
 
 > Every command above passes from a clean clone with no extra flags.
