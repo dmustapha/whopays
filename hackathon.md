@@ -8,8 +8,8 @@
 - **Frontend:** Convex static hosting
 - **Convex deployment:** https://resilient-goose-83.convex.cloud
 - **Components:** @agentmail/convex, @firecrawl/firecrawl-convex, @convex-dev/static-hosting
-- **Convex features:** schema, indexes, queries, mutations, actions, HTTP actions, scheduled functions, crons, realtime queries, file storage (static hosting)
-- **Auth:** none
+- **Convex features:** schema, indexes, queries, mutations, actions, HTTP actions, scheduled functions, crons, realtime queries, file storage (static hosting), auth
+- **Auth:** Convex Auth
 - **AI models:** gpt-4o-mini
 - **Started:** 2026-09-22T06:35:00Z
 - **Last updated:** 2026-09-22T07:56:00Z
@@ -39,6 +39,9 @@ Built the price-intelligence spine (a live NG-geo crawl of the public Spotify pr
 
 ### 2026-09-22 - 436d1f9
 Built the live board frontend — a seat map with a countdown, the append-only event log, the in-product email ledger (sender addresses redacted), and a send-budget meter, plus a plan page, an owner console, and a proof page — all bound directly to the deployment through realtime queries, so every screen updates the instant the backend changes. An idle board still reads clearly to a first-time visitor: it shows the "join to start the next cycle" invitation and a recap of the last real cycle. A seed script performs a genuine price crawl, is idempotent, and creates zero members, so the board's life is only ever earned by real joins. Deploy provenance is baked so the build-info endpoint reports the exact commit that is running (`src/`, `scripts/seed-demo.ts`).
+
+### 2026-09-22 - multi-tenant
+Turned WhoPays into a true multi-tenant product with Convex Auth. Any visitor can now create an account on the live app, create their own shared-bill plans, and own them: plans are scoped to the creator's user id, and every owner action (create, re-crawl, price update, confirm/reinstate a seat) is gated by a per-plan ownership check that rejects other users with `OWNER_ONLY`. Members stay email-only and never sign up — the join → evict → promote → PAID loop is unchanged. Replaced the single shared owner-secret with per-user identity; the demo and anchor boards are seeded under a system owner so judges still land on a live board and can join as members. Proven live end to end: a fresh user signs up, creates a plan, a member joins it by email, and a second user is blocked from touching the first user's plan (per-plan IDOR). Convex features: Convex Auth (Password), users/auth tables, per-owner indexes (`convex/auth.ts`, `convex/schema.ts`, `convex/plans.ts`, `convex/membership.ts`, `src/pages/OwnerConsole.tsx`).
 
 ### 2026-09-22 - working tree
 Added the proof pack: realness and PII audits (the seed creates zero members; no email address ever appears in a public payload), a banned-term copy test wired into the suite (payments are only ever "matched", never "verified"; no login-sharing language; no hardcoded prices), sponsor ablations that each break the product when their key is invalid (no crawl without Firecrawl, no member interface without AgentMail, no reconciliation without OpenAI), and a recompute verifier that re-derives every headline number from the live deployment and fails on a wrong figure. A domain guide documents the concepts, rules, and glossary (`scripts/`, `tests/copy.test.ts`, `DOMAIN-GUIDE.md`).

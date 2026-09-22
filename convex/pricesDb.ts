@@ -3,11 +3,12 @@ import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { LIMITS, duesPerSeat, formatNaira } from "./lib/shared";
 
-export const checkOwnerToken = internalQuery({
-  args: { token: v.string() },
+// Multi-tenant ownership check for owner-gated actions (prices crawl).
+export const userOwnsPlan = internalQuery({
+  args: { userId: v.id("users"), planId: v.id("plans") },
   handler: async (ctx, args) => {
-    const s = await ctx.db.query("ownerSessions").withIndex("by_token", (q) => q.eq("token", args.token)).unique();
-    return s !== null;
+    const p = await ctx.db.get(args.planId);
+    return p != null && p.ownerUserId === args.userId;
   },
 });
 

@@ -22,7 +22,12 @@ export default function Landing() {
             </p>
           </div>
         </div>
-        <span className="livechip">Departures · Live</span>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+          <span className="livechip">Departures · Live</span>
+          <a href="#/owner" className="badge demo" style={{ padding: "7px 12px", fontSize: ".72rem" }}>
+            Run your own bill →
+          </a>
+        </div>
       </header>
       <Board slug="spotify-family-demo" />
       {/* [CRITIQUE E-3] presentational recap of the most recent real cycle consequences */}
