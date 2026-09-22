@@ -72,7 +72,9 @@ export default function OwnerConsole() {
                   <input placeholder="new price ₦" value={priceEdit.planId === p._id ? priceEdit.naira : ""}
                     onChange={(e) => setPriceEdit({ planId: p._id, naira: e.target.value })} />
                   <button onClick={async () => {
-                    const kobo = Math.round(parseFloat(priceEdit.naira) * 100);
+                    const naira = parseFloat(priceEdit.naira);
+                    if (!Number.isFinite(naira) || naira <= 0) { setNote("enter a valid price in ₦"); return; }
+                    const kobo = Math.round(naira * 100);
                     const r = await updatePrice({ ownerToken: token, planId: p._id, priceKobo: kobo });
                     setNote(`price ${r.old} → ${r.next} (owner-updated)`); }}>
                     update price
@@ -102,7 +104,8 @@ function AddPlanByUrl({ token, onNote }: { token: string; onNote: (s: string) =>
         onNote("crawling…");
         const r = await extract({ url, ownerToken: token });
         if (!r.ok) { onNote(`crawl failed: ${r.reason}`); return; }
-        setCandidates(r.candidates ?? []); onNote(`${r.candidates?.length} plan(s) extracted — pick one`);
+        const cands = r.candidates ?? [];
+        setCandidates(cands); onNote(`${cands.length} plan(s) extracted — pick one`);
       }}>crawl & extract</button>
       <ul>
         {candidates.map((c) => (

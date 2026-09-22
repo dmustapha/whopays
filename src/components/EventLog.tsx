@@ -11,7 +11,7 @@ export default function EventLog({ slug }: { slug?: string }) {
       {events.length === 0 && <p className="muted">No events yet — join the board to cause the first row.</p>}
       <ul className="eventlog">
         {events.map((e: any, i: number) => (
-          <li key={i} className={`ev ${e.type}`}>
+          <li key={`${e.at}-${e.type}-${i}`} className={`ev ${e.type}`}>
             <time>{new Date(e.at).toLocaleTimeString()}</time>
             <span>{e.publicText}</span>
             {e.code && <code className="evcode">{e.code}</code>}
@@ -36,7 +36,7 @@ export function LastCycleRecap({ slug }: { slug?: string }) {
       <h3>Last cycle</h3>
       <p className="muted">The most recent real consequences the scheduler ran — evictions, waitlist promotions, and confirmed payments.</p>
       {recap.map((e: any, i: number) => (
-        <div key={i} className="recap-row">
+        <div key={`${e.at}-${e.type}-${i}`} className="recap-row">
           <time>{new Date(e.at).toLocaleTimeString()}</time>
           <span className={`rt-${e.type === "evict" ? "evict" : e.type === "promote" ? "promote" : "paid"}`}>{e.publicText}</span>
         </div>
