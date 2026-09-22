@@ -79,7 +79,7 @@ export const recordThread = internalMutation({
   },
 });
 
-// Inbound: the component calls this internalMutation after Svix verify + event_id dedupe.
+// Inbound: the component calls this internalMutation after Svix signature-check + event_id dedupe.
 export const onInbound = internalMutation({
   args: { message: v.any(), thread: v.any(), eventId: v.string() },
   handler: async (ctx, args) => {
