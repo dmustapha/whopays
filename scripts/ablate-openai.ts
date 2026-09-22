@@ -12,6 +12,7 @@ async function main() {
   const { token } = await client.mutation(api.plans.ownerLogin, { secret: process.env.OWNER_SECRET! });
   const plans = await client.query(api.plans.listPlans, {});
   const demo = plans.find((p: any) => p.slug === "spotify-family-demo");
+  if (!demo) { console.error("ABLATION SETUP: demo plan not found — run npm run seed first"); process.exit(1); }
   const r = await client.action(api.prices.scrapePlanPrice, { planId: demo._id, ownerToken: token });
   if (r.ok) { console.error("ABLATION FAILED: extraction succeeded without OpenAI?"); process.exit(1); }
   console.log(`ABLATION PROVEN: crawl→plan extraction dead without OpenAI (${r.reason}); forwarded bank alerts fall to pending_parse.`);
