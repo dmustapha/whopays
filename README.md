@@ -6,10 +6,10 @@
 
 [![Live](https://img.shields.io/badge/live-resilient--goose--83.convex.site-79c78d)](https://resilient-goose-83.convex.site)
 [![Tests](https://img.shields.io/badge/tests-68%2F68-79c78d)](#tests)
-[![Convex](https://img.shields.io/badge/backend-Convex-f0a92e)](https://convex.dev)
+[![Convex](https://img.shields.io/badge/backend-Convex-f0a92e)](https://www.convex.dev)
 [![License](https://img.shields.io/badge/license-MIT-8f8a80)](LICENSE)
 
-**Live app: https://resilient-goose-83.convex.site** (open the board, join a seat with one email, watch it settle)
+**Live app:** https://resilient-goose-83.convex.site (open the board, join a seat with one email, watch it settle)
 
 ![WhoPays board](screenshots/board-1440.png)
 
