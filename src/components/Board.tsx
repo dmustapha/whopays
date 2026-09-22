@@ -41,7 +41,14 @@ export default function Board({ slug }: { slug: string }) {
     }
   }, [seatList.map((s) => `${s._id}:${s.state}`).join(",")]);
 
-  if (board === undefined) return <div className="card">Loading the live board…</div>;
+  if (board === undefined) return (
+    <div className="board card" aria-busy="true" aria-label="Loading the live board">
+      <div className="skel skel-head" />
+      <div className="skel-seatgrid">
+        {Array.from({ length: 6 }).map((_, i) => <div key={i} className="skel skel-seat" />)}
+      </div>
+    </div>
+  );
   if (board === null) return <div className="card">No such plan.</div>;
   const { plan, seats, waitlistCount, cycle, snapshot, duesDisplay } = board as any;
 

@@ -3,7 +3,16 @@ import { api } from "../../convex/_generated/api";
 
 export default function EmailLedger() {
   const rows = useQuery(api.plans.getEmailLedger, { limit: 20 });
-  if (!rows) return <div className="card">Loading email ledger…</div>;
+  if (!rows) return (
+    <div className="card" aria-busy="true" aria-label="Loading email ledger">
+      <div className="skel-label">Outbound &amp; inbound email</div>
+      <div style={{ padding: "10px 0" }}>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="skel skel-line" style={{ margin: "12px 0", width: `${80 - i * 12}%` }} />
+        ))}
+      </div>
+    </div>
+  );
   return (
     <div className="card">
       <h3>Outbound & inbound email ledger</h3>
