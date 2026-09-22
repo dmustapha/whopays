@@ -1,0 +1,17 @@
+# secrets — NEVER commit
+.env
+.env.*
+!.env.example
+*.local
+.env.local.bak-*
+
+# deps / build
+node_modules/
+dist/
+build/
+.vite/
+.convex/
+
+# os / editor
+.DS_Store
+*.log
