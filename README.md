@@ -121,7 +121,7 @@ curl -s https://www.spotify.com/ng/premium/ | grep -c '₦2,500'   # → 2
 Or run the bundled proof, which re-derives the figure from the live board's `/api/proof` and re-checks it against the public page:
 
 ```bash
-SITE_HOST=beloved-minnow-486.convex.site npm run proof:public     # → PUBLIC PROOF: PASS
+npm run proof:public     # → PUBLIC PROOF: PASS
 ```
 
 > Every command above passes from a clean clone with no extra flags.
@@ -182,6 +182,8 @@ Every server-side secret lives in `convex env` (never in the bundle). `.env.loca
 
 ## Documentation
 
+- **[`JUDGES.md`](JUDGES.md): start here — every claim as claim → test → keyless receipt, one command to verify**
+- **[`hackathon.md`](hackathon.md): the build log judges read — what was built, the stack, the live URL, the demo**
 - `DECISIONS.md`: architecture decision records
 - `SECURITY.md`: threat matrix and defenses
 - `LIMITATIONS.md`: scope boundaries, stated honestly
