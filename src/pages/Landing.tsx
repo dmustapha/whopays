@@ -12,9 +12,18 @@ export default function Landing() {
     <main>
       <header className="mast hero">
         <div className="mark">
-          <span className="glyph" aria-hidden="true" />
           <div>
-            <h1>WhoPays</h1>
+            <h1 className="brand" aria-label="WhoPays">
+              <svg className="brandmark" viewBox="0 0 420 108" role="img" aria-label="WhoPays">
+                <rect x="8" y="20" width="60" height="60" rx="10" fill="#0e0e10" stroke="#2a2a30" strokeWidth="3" />
+                <rect x="19" y="35" width="38" height="6" rx="2" fill="#f0a92e" />
+                <rect x="19" y="59" width="38" height="6" rx="2" fill="#57b06f" />
+                <line x1="8" y1="50" x2="68" y2="50" stroke="#000000" strokeWidth="2.5" opacity="0.7" />
+                <text x="90" y="62" fontFamily="'Archivo Narrow','Arial Narrow',sans-serif" fontWeight="700" fontSize="46" letterSpacing="4" fill="#f4f1ea" style={{ textTransform: "uppercase" }}>WHOPAYS</text>
+                <line x1="92" y1="80" x2="228" y2="80" stroke="#f0a92e" strokeWidth="4" strokeLinecap="round" />
+                <line x1="236" y1="80" x2="352" y2="80" stroke="#57b06f" strokeWidth="4" strokeLinecap="round" />
+              </svg>
+            </h1>
             <p className="pitch">
               A live board for any bill a group shares. Real prices crawled from the source,
               members run entirely by email, and a scheduler that evicts the unpaid seat and
