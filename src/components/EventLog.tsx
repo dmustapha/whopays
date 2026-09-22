@@ -3,7 +3,16 @@ import { api } from "../../convex/_generated/api";
 
 export default function EventLog({ slug }: { slug?: string }) {
   const events = useQuery(api.plans.getEventLog, { slug, limit: 40 });
-  if (!events) return <div className="card">Loading event log…</div>;
+  if (!events) return (
+    <div className="card" aria-busy="true" aria-label="Loading event log">
+      <div className="skel-label">Live event log</div>
+      <div style={{ padding: "10px 0" }}>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="skel skel-line" style={{ margin: "10px 0", width: `${88 - i * 9}%` }} />
+        ))}
+      </div>
+    </div>
+  );
   return (
     <div className="card">
       <h3>Live event log</h3>

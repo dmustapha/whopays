@@ -23,7 +23,7 @@
   --red:#c94f43;           /* EVICTION — borders/dots (test token) */
   --red-ink:#e8776b;       /* evicted status TEXT — ≥4.5 on panel */
   /* ---- radius / elevation ---- */
-  --r-sm:5px; --r-md:6px; --r-lg:10px; --r-pill:99px;
+  --r-xs:3px; --r-sm:5px; --r-md:6px; --r-lg:10px; --r-pill:99px;
   --el-1:inset 0 1px 0 rgba(255,255,255,.03);           /* flap sheen */
   --el-2:0 6px 20px rgba(0,0,0,.45);                     /* panel lift */
   --seam:inset 0 1px 0 rgba(255,255,255,.03), inset 0 -8px 16px rgba(0,0,0,.5);
@@ -47,7 +47,6 @@ body{
 main{max-width:1000px; margin:0 auto; padding:26px 20px 88px}
 h2{font-family:var(--disp); text-transform:uppercase; letter-spacing:.08em; font-size:1.2rem; margin:0 0 10px}
 a{color:var(--amber); text-decoration:none}
-a:hover{text-decoration:underline}
 ::selection{background:rgba(240,169,46,.28); color:var(--text)}
 
 /* ---------------------------------------------------------------- masthead */
@@ -91,7 +90,7 @@ a:hover{text-decoration:underline}
 .board-head h2{font-family:var(--disp); text-transform:uppercase; letter-spacing:.10em;
   font-size:1.05rem; margin:0}
 .badge{font-family:var(--mono); font-size:.66rem; letter-spacing:.08em; text-transform:uppercase;
-  padding:3px 8px; border-radius:3px; border:1px solid var(--line); color:var(--muted); white-space:nowrap}
+  padding:3px 8px; border-radius:var(--r-xs); border:1px solid var(--line); color:var(--muted); white-space:nowrap}
 .badge.demo{border-color:var(--amber); color:var(--amber)}
 .badge.anchor{border-color:var(--green); color:var(--green-ink)}
 .badge.muted{border-color:var(--line); color:var(--muted)}
@@ -122,7 +121,6 @@ a:hover{text-decoration:underline}
   transition:transform .12s ease, border-color .3s ease}
 .seat::after{content:""; position:absolute; left:0; right:0; top:50%; height:1px;
   background:rgba(0,0,0,.6); box-shadow:0 1px 0 rgba(255,255,255,.03)}  /* flap seam */
-.seat:hover{transform:translateY(-1px)}
 .seat-label{font-family:var(--mono); font-size:.82rem; letter-spacing:.04em; color:var(--text)}
 .seat-state{font-family:var(--disp); text-transform:uppercase; letter-spacing:.12em; font-weight:700;
   font-size:1.02rem; margin-top:9px; display:flex; align-items:center; gap:7px; color:var(--muted)}
@@ -157,10 +155,10 @@ a:hover{text-decoration:underline}
 button, .join button{font-family:var(--disp); text-transform:uppercase; letter-spacing:.1em; font-weight:700;
   background:var(--amber); color:#1a1305; border:0; border-radius:var(--r-sm);
   padding:11px 18px; cursor:pointer; transition:transform .12s ease, filter .12s ease}
-button:hover{transform:translateY(-1px); filter:brightness(1.06)}
+button:active{transform:translateY(0) scale(.98); filter:brightness(.97)}
 button:disabled{opacity:.5; cursor:not-allowed; transform:none}
 input:focus-visible, button:focus-visible, summary:focus-visible, a:focus-visible{
-  outline:2px solid var(--amber); outline-offset:2px; border-radius:2px}
+  outline:2px solid var(--amber); outline-offset:2px; border-radius:var(--r-xs)}
 
 /* ------------------------------------------------------------ last-cycle recap */
 .recap h3, .card h3{font-family:var(--disp); text-transform:uppercase; letter-spacing:.1em;
@@ -182,7 +180,7 @@ input:focus-visible, button:focus-visible, summary:focus-visible, a:focus-visibl
 .eventlog .ev.promote span{color:var(--amber)}
 .eventlog .ev.paid_confirmed span, .eventlog .ev.paid_matched span{color:var(--green-ink)}
 .evcode{color:var(--red-ink); font-size:.72rem; margin-left:auto; border:1px solid rgba(201,79,67,.4);
-  padding:0 5px; border-radius:3px}
+  padding:0 5px; border-radius:var(--r-xs)}
 
 /* ------------------------------------------------------------ email ledger */
 .ledger details{border-bottom:1px solid var(--line); padding:7px 0}
@@ -211,16 +209,42 @@ input:focus-visible, button:focus-visible, summary:focus-visible, a:focus-visibl
 main.card ol{padding-left:20px; line-height:1.85}
 main.card ol li{margin:6px 0}
 code{font-family:var(--mono); font-size:.85em; background:var(--flap); border:1px solid var(--line);
-  border-radius:3px; padding:1px 6px; color:var(--text)}
+  border-radius:var(--r-xs); padding:1px 6px; color:var(--text)}
 
 /* -------------------------------------------------------------- misc / util */
 .muted{color:var(--muted); font-size:.9rem}
 .back{font-family:var(--mono); color:var(--muted); display:inline-block; margin-bottom:8px; font-size:.82rem}
-.back:hover{color:var(--amber)}
 footer{margin-top:26px; color:var(--muted); font-family:var(--mono); font-size:.76rem; line-height:1.7;
   border-top:1px solid var(--line); padding-top:16px}
 footer a{color:var(--amber)}
 
+/* ---- hover craft (only on hover-capable devices — Rule 23) ---- */
+@media (hover:hover){
+  a:hover{text-decoration:underline}
+  .seat:hover{transform:translateY(-1px); border-color:rgba(255,255,255,.14)}
+  button:hover{transform:translateY(-1px); filter:brightness(1.06)}
+  .back:hover{color:var(--amber)}
+  .ledger summary:hover .subj{color:var(--amber)}
+}
+
+/* ---- skeleton loaders (branded departure-board "settling" shimmer) ---- */
+.skel{position:relative; overflow:hidden; background:var(--flap);
+  border:1px solid var(--line); border-radius:var(--r-sm)}
+.skel::after{content:""; position:absolute; inset:0;
+  background:linear-gradient(90deg, transparent, rgba(240,169,46,.07) 45%, rgba(255,255,255,.05) 50%, transparent);
+  transform:translateX(-100%); animation:settle 1.25s ease-in-out infinite}
+@keyframes settle{100%{transform:translateX(100%)}}
+.skel-board{padding:0}
+.skel-line{height:12px; border-radius:var(--r-xs)}
+.skel-seatgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(172px,1fr)); gap:10px; padding:18px}
+.skel-seat{height:64px}
+.skel-head{height:56px; border:0; border-bottom:1px solid var(--line); border-radius:0}
+.skel-label{font-family:var(--mono); font-size:.72rem; color:var(--muted); letter-spacing:.1em;
+  text-transform:uppercase; padding:12px 18px 0; display:flex; align-items:center; gap:8px}
+.skel-label::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--amber);
+  animation:beacon 1.4s ease-in-out infinite}
+
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none !important; transition:none !important}
+  .skel::after{display:none}
 }

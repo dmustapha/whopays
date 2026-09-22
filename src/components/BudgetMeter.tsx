@@ -3,7 +3,15 @@ import { api } from "../../convex/_generated/api";
 
 export default function BudgetMeter() {
   const b = useQuery(api.plans.getSendBudget, {});
-  if (!b) return <div className="card">Loading send budget…</div>;
+  if (!b) return (
+    <div className="card" aria-busy="true" aria-label="Loading send budget">
+      <div className="skel-label">Send budget</div>
+      <div style={{ padding: "12px 0 6px" }}>
+        <div className="skel skel-line" style={{ height: 10, borderRadius: "var(--r-pill)" }} />
+        <div className="skel skel-line" style={{ marginTop: 12, width: "70%" }} />
+      </div>
+    </div>
+  );
   const pct = Math.min(100, Math.round((b.sent / b.cap) * 100));
   return (
     <div className="card budget">
