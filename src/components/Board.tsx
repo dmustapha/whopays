@@ -89,7 +89,7 @@ export default function Board({ slug }: { slug: string }) {
         <p className="muted">Real household bill · read-only board — no live cycle running.</p>
       )}
       <div className="price-line">
-        {!snapshot || "code" in snapshot || snapshot.priceDisplay == null ? (
+        {!snapshot || typeof snapshot !== "object" || "code" in snapshot || snapshot.priceDisplay == null ? (
           <span className="badge muted">price pending crawl</span>
         ) : (
           <span>

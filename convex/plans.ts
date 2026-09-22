@@ -112,6 +112,14 @@ export const getBoard = query({
   },
 });
 
+// Multi-tenant privacy: the global (no-slug) branch is a PUBLIC surface (Landing).
+// It must expose ONLY the showcase (demo/anchor) plans — never another creator's
+// private plan activity. Per-plan events stay public by slug (boards are shareable links).
+async function showcasePlanIds(ctx: any): Promise<Set<string>> {
+  const plans = await ctx.db.query("plans").collect();
+  return new Set(plans.filter((p: any) => p.isDemo || p.anchorReadOnly).map((p: any) => p._id));
+}
+
 export const getEventLog = query({
   args: { slug: v.optional(v.string()), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
@@ -123,19 +131,31 @@ export const getEventLog = query({
         .withIndex("by_plan_time", (q) => q.eq("planId", plan._id)).order("desc").take(limit);
       return assertNoPii(rows.map((e) => ({ at: e.at, type: e.type, publicText: e.publicText, code: e.code ?? null })));
     }
-    const rows = await ctx.db.query("events").withIndex("by_time").order("desc").take(limit);
-    return assertNoPii(rows.map((e) => ({ at: e.at, type: e.type, publicText: e.publicText, code: e.code ?? null })));
+    // GLOBAL branch (public Landing) — showcase plans only + un-scoped system rows (planId null).
+    const showcase = await showcasePlanIds(ctx);
+    const rows = await ctx.db.query("events").withIndex("by_time").order("desc").take(limit * 2);
+    return assertNoPii(rows
+      .filter((e) => e.planId == null || showcase.has(e.planId))
+      .slice(0, limit)
+      .map((e) => ({ at: e.at, type: e.type, publicText: e.publicText, code: e.code ?? null })));
   },
 });
 
 export const getEmailLedger = query({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
-    const rows = await ctx.db.query("emailLog").withIndex("by_time").order("desc").take(Math.min(args.limit ?? 30, 100));
-    return assertNoPii(rows.map((r) => ({
-      at: r.at, direction: r.direction, kind: r.kind, subject: r.subject,
-      bodyText: r.bodyText, counterparty: r.counterpartyRedacted, status: r.status ?? null,
-    })));
+    // PUBLIC surface (Landing). Show showcase-plan outbound + address-redacted inbound/system
+    // rows (planId null); NEVER another creator's private-plan email (subject leaks plan name).
+    const showcase = await showcasePlanIds(ctx);
+    const limit = Math.min(args.limit ?? 30, 100);
+    const rows = await ctx.db.query("emailLog").withIndex("by_time").order("desc").take(limit * 3);
+    return assertNoPii(rows
+      .filter((r) => r.planId == null || showcase.has(r.planId))
+      .slice(0, limit)
+      .map((r) => ({
+        at: r.at, direction: r.direction, kind: r.kind, subject: r.subject,
+        bodyText: r.bodyText, counterparty: r.counterpartyRedacted, status: r.status ?? null,
+      })));
   },
 });
 
@@ -254,11 +274,15 @@ export const getUnrecognized = query({
     const uid = await getAuthUserId(ctx);
     if (!uid) throw new Error(CODES.OWNER_ONLY);
     const mine = await ctx.db.query("plans").withIndex("by_owner", (q) => q.eq("ownerUserId", uid)).collect();
-    const myPlanIds = new Set(mine.map((p) => p._id));
+    // Unrecognized replies can't be attributed to a plan (no seat matched), but they DO carry the
+    // inbox they arrived at. Scope by the caller's owned inboxes, normalizing "" to the env default
+    // exactly as the send rail does (emailRail.enqueueSend) so env-default plans still match.
+    const defaultInbox = process.env.AGENTMAIL_INBOX_ID ?? "";
+    const myInboxes = new Set(mine.map((p) => (p.inboxId && p.inboxId !== "" ? p.inboxId : defaultInbox)));
     const rows = await ctx.db.query("unrecognized")
       .withIndex("by_resolved", (q) => q.eq("resolved", false)).take(200);
     return rows
-      .filter((r) => r.planId != null && myPlanIds.has(r.planId))
+      .filter((r) => myInboxes.has(r.inboxId))
       .slice(0, 50)
       .map((r) => ({ _id: r._id, receivedAt: r.receivedAt, topText: r.topText }));
   },
