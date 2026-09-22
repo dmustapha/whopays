@@ -11,7 +11,9 @@
 
 **Live app:** https://beloved-minnow-486.convex.site (open the board, join a seat with one email, watch it settle)
 
-![WhoPays board](screenshots/board-1440.png)
+**Demo:** https://youtu.be/dd2wJL17vZk
+
+[![WhoPays demo](https://img.youtube.com/vi/dd2wJL17vZk/maxresdefault.jpg)](https://youtu.be/dd2wJL17vZk)
 
 ## What Is WhoPays?
 

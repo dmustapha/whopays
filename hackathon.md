@@ -4,6 +4,7 @@
 - **Event:** Convex All Gas Hackathon
 - **What it does:** A live ledger for shared recurring bills — crawled real prices set each member's dues, members act entirely by email, and a scheduler enforces eviction and promotion while every screen live-syncs.
 - **Live app:** https://beloved-minnow-486.convex.site
+- **Demo:** https://youtu.be/dd2wJL17vZk
 - **Repo:** https://github.com/dmustapha/whopays
 - **Frontend:** Convex static hosting
 - **Convex deployment:** https://beloved-minnow-486.convex.cloud
@@ -12,7 +13,7 @@
 - **Auth:** Convex Auth
 - **AI models:** gpt-4o-mini
 - **Started:** 2026-09-22T06:35:00Z
-- **Last updated:** 2026-09-22T07:56:00Z
+- **Last updated:** 2026-09-22T18:45:00Z
 
 ## Log
 
@@ -45,3 +46,6 @@ Turned WhoPays into a true multi-tenant product with Convex Auth. Any visitor ca
 
 ### 2026-09-22 - working tree
 Added the proof pack: realness and PII audits (the seed creates zero members; no email address ever appears in a public payload), a banned-term copy test wired into the suite (payments are only ever "matched", never "verified"; no login-sharing language; no hardcoded prices), sponsor ablations that each break the product when their key is invalid (no crawl without Firecrawl, no member interface without AgentMail, no reconciliation without OpenAI), and a recompute verifier that re-derives every headline number from the live deployment and fails on a wrong figure. A domain guide documents the concepts, rules, and glossary (`scripts/`, `tests/copy.test.ts`, `DOMAIN-GUIDE.md`).
+
+### 2026-09-22 - 44932e9
+Shipped to production on Convex static hosting: the SPA and backend run on the `beloved-minnow-486` deployment, the AgentMail webhook is registered against the live site, the demo and anchor boards are seeded, and the build-info endpoint reports the exact running commit. Applied the Solari design system across every surface. Recorded a screen-first walkthrough of the live product — a cold join, the scheduler evicting the unpaid seat and promoting the waitlist on a visible clock, a "reply PAID" turning a seat green, and a public pricing page crawled into a new plan — proving the full loop end to end on the deployed app. Demo: https://youtu.be/dd2wJL17vZk
