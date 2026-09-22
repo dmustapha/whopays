@@ -11,7 +11,7 @@ export default function EmailLedger() {
       {rows.length === 0 && <p className="muted">No email yet — join the board and the ack email lands here.</p>}
       <div className="ledger">
         {rows.map((r: any, i: number) => (
-          <details key={i} className={`mail ${r.direction}`}>
+          <details key={`${r.at}-${r.kind}-${i}`} className={`mail ${r.direction}`}>
             <summary>
               <span className="dir">{r.direction === "out" ? "→" : "←"}</span>
               <span className="kind">{r.kind}</span>
