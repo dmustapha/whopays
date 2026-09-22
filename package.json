@@ -1,0 +1,36 @@
+{
+  "name": "whopays",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:backend": "convex dev",
+    "build": "tsc -b && vite build",
+    "deploy": "npx @convex-dev/static-hosting deploy",
+    "test": "vitest run",
+    "seed": "tsx scripts/seed-demo.ts",
+    "audit:realness": "tsx scripts/audit-realness.ts",
+    "audit:pii": "tsx scripts/audit-pii.ts",
+    "verify:claims": "tsx scripts/verify-claims.ts",
+    "proof:public": "bash scripts/public-proof.sh"
+  },
+  "dependencies": {
+    "@agentmail/convex": "latest",
+    "@convex-dev/static-hosting": "latest",
+    "@firecrawl/firecrawl-convex": "latest",
+    "convex": "^1.28.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "convex-test": "^0.0.38",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.0",
+    "vitest": "^2.0.0"
+  }
+}
