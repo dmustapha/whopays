@@ -70,6 +70,21 @@ export const recordThread = internalMutation({
         (components.agentmail.lib as any).getOutboundStatus, { outboundId: args.outboundId },
       );
       threadId = status?.threadId ?? undefined;
+      // Reconcile the real send status back into the judge-visible ledger (F-012): the emailLog
+      // row is inserted "enqueued"; once the component resolves the send we patch it to the true
+      // status (sent/delivered) so the ledger stops showing every delivered email as "enqueued".
+      // This also makes ablate-agentmail.ts a VALID gate (status flips only when the key is real).
+      if (status?.status) {
+        const row = await ctx.db
+          .query("emailLog")
+          .withIndex("by_time")
+          .order("desc")
+          .filter((q) => q.eq(q.field("outboundId"), args.outboundId))
+          .first();
+        if (row && row.status !== status.status) {
+          await ctx.db.patch(row._id, { status: status.status });
+        }
+      }
     } catch {
       return;
     }
