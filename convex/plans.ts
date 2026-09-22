@@ -2,7 +2,7 @@ import { query, mutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { CODES, LIMITS, assertNoPii, duesPerSeat, formatNaira, seatLabel } from "./lib/shared";
+import { CODES, LIMITS, assertNoPii, duesPerSeat, formatNaira, seatLabel, publicLedgerRow } from "./lib/shared";
 
 // ---------- helpers (module-private) ----------
 // Multi-tenant owner gate: the caller must be authenticated AND own this plan.
@@ -152,10 +152,8 @@ export const getEmailLedger = query({
     return assertNoPii(rows
       .filter((r) => r.planId == null || showcase.has(r.planId))
       .slice(0, limit)
-      .map((r) => ({
-        at: r.at, direction: r.direction, kind: r.kind, subject: r.subject,
-        bodyText: r.bodyText, counterparty: r.counterpartyRedacted, status: r.status ?? null,
-      })));
+      // DH-6: mask inbound bodies not provably attributable to a showcase plan (tenant safety).
+      .map((r) => publicLedgerRow(r, (id: any) => id != null && showcase.has(id))));
   },
 });
 
@@ -210,11 +208,18 @@ export const createPlan = mutation({
     let slug = args.slug || "plan";
     const clash = await ctx.db.query("plans").withIndex("by_slug", (q) => q.eq("slug", slug)).unique();
     if (clash) slug = `${slug}-${Math.random().toString(36).slice(2, 7)}`;
+    // DH-8 hardening: anchorReadOnly and inboxId are SYSTEM-ONLY (seedCreatePlan sets them).
+    // A public caller passing anchorReadOnly:true would inject their private plan into the
+    // public showcase (Landing filter = isDemo||anchorReadOnly) and unlock owner-enroll of
+    // arbitrary emails; a spoofed inboxId would join their plan into another tenant's inbound
+    // routing scope (inbox-spoof seam). Both are forced to the safe default here — the client
+    // args stay in the signature for backward compat but are ignored (legit callers already
+    // send false/"": OwnerConsole.tsx:193, e2e-multitenant.ts:28).
     return await birthPlan(ctx, {
       slug, name: args.name, kind: args.kind, sourceUrl: args.sourceUrl,
       priceKobo: args.priceKobo, seatsTotal: args.seatsTotal, cycleMinutes: args.cycleMinutes,
       isDemo: false, demoLabel: undefined, autoConfirm: false,
-      anchorReadOnly: args.anchorReadOnly, inboxId: args.inboxId, ownerUserId: uid,
+      anchorReadOnly: false, inboxId: "", ownerUserId: uid,
     });
   },
 });
