@@ -81,6 +81,33 @@ export function redactAddresses(s: string): string {
   return s.replace(new RegExp(ADDRESS_SHAPE, "g"), "[redacted inbox]");
 }
 
+// DH-6 tenant-safety guard. Inbound emailLog rows are written by the webhook BEFORE routing,
+// so they never carry a planId — the public Landing ledger therefore cannot attribute them to
+// a showcase (demo/anchor) plan. Rendering their body publicly leaks a private tenant's reply
+// content (addresses are redacted, but plan/personal context is not). This projection masks the
+// body/subject of ANY inbound row the public surface can't prove belongs to a showcase plan,
+// while still signalling the rail is bidirectional (kind/timestamp/redacted peer). Outbound
+// rows always carry a planId (enqueueSend) and are scoped by the caller before this.
+export type PublicLedgerRow = {
+  at: number; direction: "in" | "out"; kind: string;
+  subject: string; bodyText: string; counterparty: string; status: string | null;
+};
+export function publicLedgerRow(
+  row: { at: number; direction: "in" | "out"; kind: string; subject: string;
+         bodyText: string; counterpartyRedacted: string; status?: string | null;
+         planId?: string | null },
+  isShowcase: (planId: string | null | undefined) => boolean,
+): PublicLedgerRow {
+  const base = { at: row.at, direction: row.direction, kind: row.kind,
+    counterparty: row.counterpartyRedacted, status: row.status ?? null };
+  const attributable = row.planId != null && isShowcase(row.planId);
+  if (row.direction === "in" && !attributable) {
+    // Not provably a showcase reply → never expose tenant-typed content publicly.
+    return { ...base, subject: "(reply received)", bodyText: "(reply content is visible to the plan owner)" };
+  }
+  return { ...base, subject: row.subject, bodyText: row.bodyText };
+}
+
 export function dayKey(nowMs: number): string {
   return new Date(nowMs).toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
 }
