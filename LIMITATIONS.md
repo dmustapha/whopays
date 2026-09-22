@@ -8,7 +8,7 @@
 - Proof surfaces: /proof, /api/proof, /api/build-info, public-proof.sh, 3 sponsor ablation scripts, realness/PII audits, claims recompute.
 
 ## Feature-gated (deliberately not built for this scope)
-- Real payment processing (Paystack or any PSP). Reason: out-of-scope by warroom lock — a ledger that "matches, owner confirms" stays honest; processing would drag verification claims and licensing surface in.
+- Real payment processing (Paystack or any PSP). Reason: out of scope by design — a ledger that "matches, owner confirms" stays honest; processing would drag verification claims and licensing surface in.
 - Payment *verification* of any kind. Reason: thesis invariant — we reconcile and the owner confirms; bank-grade verification is not claimable or buildable here.
 - Member accounts / auth. Reason: email-only membership IS the product; Convex Auth v2 is super-alpha (organizer-stated) and auth-less submissions are explicitly valid.
 - Netflix/Spotify/Starlink account integration. Reason: the app's only external read is public pricing pages, by design and by ToS posture.
