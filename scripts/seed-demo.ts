@@ -20,7 +20,7 @@ async function main() {
 
   const demoId = await client.mutation(api.plans.seedCreatePlan, {
     secret: ownerSecret!, ownerUserId, slug: "spotify-family-demo",
-    name: "Spotify Premium Family (demo)",
+    name: "Spotify Premium Family",
     kind: "crawled", sourceUrl: "https://www.spotify.com/ng/premium/",
     priceKobo: 2500_00, seatsTotal: 6, cycleMinutes: 3,
     isDemo: true, demoLabel: "demo plan — replying PAID is the payment · cycles every 3 minutes",

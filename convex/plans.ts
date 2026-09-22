@@ -240,6 +240,10 @@ export const seedCreatePlan = mutation({
     if (existing) {
       // idempotent re-seed + migrate pre-auth plans to the system owner.
       if (existing.ownerUserId !== args.ownerUserId) await ctx.db.patch(existing._id, { ownerUserId: args.ownerUserId });
+      // migrate cosmetic showcase fields on re-seed (name/demoLabel) so a seed edit takes effect
+      // without a destructive re-create; structural flags (isDemo/autoConfirm/anchorReadOnly) unchanged.
+      if (existing.name !== args.name || existing.demoLabel !== args.demoLabel)
+        await ctx.db.patch(existing._id, { name: args.name, demoLabel: args.demoLabel });
       return existing._id;
     }
     const { secret, ...plan } = args;
