@@ -1,0 +1,13 @@
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "../convex/_generated/api";
+const c = new ConvexHttpClient(process.env.SPIKE_URL!);
+const email = "spike-" + Math.floor(Math.random() * 1e6) + "@example.com";
+const pw = "Sp1ke-pass-ABCD";
+const res: any = await c.action(api.auth.signIn, { provider: "password", params: { email, password: pw, flow: "signUp" } });
+const token = res?.tokens?.token;
+console.log("signUp ->", token ? "tokens returned OK" : JSON.stringify(res));
+if (!token) process.exit(1);
+c.setAuth(token);
+const who: any = await c.query(api.authSpike.whoAmI, {});
+console.log("whoAmI ->", JSON.stringify(who), who.authed ? "IDENTITY RESOLVED OK" : "no identity");
+process.exit(who.authed ? 0 : 1);

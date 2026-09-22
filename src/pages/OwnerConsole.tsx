@@ -57,7 +57,8 @@ function AuthGate() {
       <p className="muted" style={{ marginTop: 14 }}>
         {flow === "signUp" ? "Already have an account?" : "New here?"}{" "}
         <a role="button" tabIndex={0} style={{ cursor: "pointer" }}
-           onClick={() => { setFlow(flow === "signUp" ? "signIn" : "signUp"); setErr(null); }}>
+           onClick={() => { setFlow(flow === "signUp" ? "signIn" : "signUp"); setErr(null); }}
+           onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setFlow(flow === "signUp" ? "signIn" : "signUp"); setErr(null); } }}>
           {flow === "signUp" ? "Sign in" : "Create an account"}
         </a>
       </p>

@@ -1,10 +1,10 @@
 {
-  "at": "2026-09-22T06:56:17.463Z",
+  "at": "2026-09-22T11:37:34.436Z",
   "plans_total": 2,
   "crawled_plans": 1,
   "demo_price_kobo": 250000,
   "demo_price_source": "https://www.spotify.com/ng/premium/",
-  "evictions_total": 0,
-  "promotions_total": 0,
-  "emails_sent_today": 37
+  "evictions_total": 5,
+  "promotions_total": 5,
+  "emails_sent_today": 71
 }

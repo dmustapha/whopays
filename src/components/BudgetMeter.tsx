@@ -16,7 +16,7 @@ export default function BudgetMeter() {
   return (
     <div className="card budget">
       <h3>Send budget</h3>
-      <div className="meter" role="meter" aria-valuenow={b.sent} aria-valuemax={b.cap}>
+      <div className="meter" role="meter" aria-label="emails sent today" aria-valuenow={b.sent} aria-valuemin={0} aria-valuemax={b.cap}>
         <div className="fill" style={{ width: `${pct}%` }} />
       </div>
       <p className="muted">
