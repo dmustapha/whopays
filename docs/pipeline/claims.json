@@ -1,1 +1,13 @@
-{ "numbers": {} }
+{
+  "numbers": {
+    "demo_price_kobo": 250000,
+    "crawled_plans": 1,
+    "plans_total": 2
+  },
+  "provenance": {
+    "demo_price_source": "https://www.spotify.com/ng/premium/",
+    "recomputed_by": "scripts/verify-claims.ts -> evidence/claims-recompute.json",
+    "public_proof": "npm run proof:public (re-derives the naira figure from the public Spotify page, zero our-infra)"
+  },
+  "note": "Only recompute-stable headline numbers are pinned here. Volatile counts (emails_sent_today, evictions_total, promotions_total) are recomputed live by verify-claims.ts and never pinned. verify-claims.ts fails on any mismatch between a pinned number and the live recompute."
+}
