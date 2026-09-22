@@ -51,11 +51,11 @@ Every headline number/price/URL/hash in README, demo narration, hackathon.md, an
 ## SOURCE LOCK
 | External identifier | Version / pin | Verify command | Expected output | Status |
 |---|---|---|---|---|
-| `@agentmail/convex` API surface | README@main (fetched 2026-09-21) | `curl -s https://raw.githubusercontent.com/agentmail-to/convex/main/README.md \| grep -cE "onMessageReceived\|handleWebhook\|sendMessage"` | ≥3 | [VERIFIED-in-forge] |
-| `@firecrawl/firecrawl-convex` location option | client/index.ts@main L51/64 | `curl -s https://raw.githubusercontent.com/firecrawl/firecrawl-convex/main/src/client/index.ts \| grep -c "LocationConfig"` | ≥2 | [VERIFIED-in-forge] |
-| `@convex-dev/static-hosting` root-routes mode | README@main | `curl -s https://raw.githubusercontent.com/get-convex/static-hosting/main/README.md \| grep -c registerStaticRoutes` | ≥1 | [VERIFIED-in-forge] |
-| Spotify NG Family price ₦2,500 | public page (probed 2026-09-21T23:24Z) | `curl -sL https://www.spotify.com/ng/premium/ \| grep -c "₦2,500"` | ≥1 | [VERIFIED-in-forge] |
-| OpenAI gpt-4o-mini via key in .env.local | live probe HTTP 200 | `curl -s -o /dev/null -w "%{http_code}" https://api.openai.com/v1/chat/completions -H "Authorization: Bearer $OPENAI_API_KEY" -H "Content-Type: application/json" -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"OK"}],"max_tokens":2}'` | 200 | [VERIFIED-in-forge] |
+| `@agentmail/convex` API surface | README@main (fetched 2026-09-21) | `curl -s https://raw.githubusercontent.com/agentmail-to/convex/main/README.md \| grep -cE "onMessageReceived\|handleWebhook\|sendMessage"` | ≥3 | [VERIFIED] |
+| `@firecrawl/firecrawl-convex` location option | client/index.ts@main L51/64 | `curl -s https://raw.githubusercontent.com/firecrawl/firecrawl-convex/main/src/client/index.ts \| grep -c "LocationConfig"` | ≥2 | [VERIFIED] |
+| `@convex-dev/static-hosting` root-routes mode | README@main | `curl -s https://raw.githubusercontent.com/get-convex/static-hosting/main/README.md \| grep -c registerStaticRoutes` | ≥1 | [VERIFIED] |
+| Spotify NG Family price ₦2,500 | public page (probed 2026-09-21T23:24Z) | `curl -sL https://www.spotify.com/ng/premium/ \| grep -c "₦2,500"` | ≥1 | [VERIFIED] |
+| OpenAI gpt-4o-mini via key in .env.local | live probe HTTP 200 | `curl -s -o /dev/null -w "%{http_code}" https://api.openai.com/v1/chat/completions -H "Authorization: Bearer $OPENAI_API_KEY" -H "Content-Type: application/json" -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"OK"}],"max_tokens":2}'` | 200 | [VERIFIED] |
 | AgentMail free-tier caps (3 inboxes / 100/day) | agentmail.to/pricing (fetched) | `curl -s https://agentmail.to/pricing \| grep -ci "100 emails"` | ≥1 | [UNVERIFIED-build-gate] (re-check at G2) |
 | Netflix NG price via location:NG | not yet run | G1 gate: scrape netflix.com/ng/ w/ location NG | ₦ price extracted | [UNVERIFIED-build-gate] |
 
