@@ -62,3 +62,31 @@ describe("WCAG contrast on load-bearing pairs", () => {
     expect(contrast(token("text"), token("card"))).toBeGreaterThanOrEqual(4.5);
   });
 });
+
+// ---- SOLARI additions (CP-4 winner; whopays/DESIGN_SPEC.md) -----------------
+describe("Solari status-ink contrast (seat/log/ledger text on the panel)", () => {
+  it("paid status ink (--green-ink) on panel >= 4.5:1", () => {
+    expect(contrast(token("green-ink"), token("card"))).toBeGreaterThanOrEqual(4.5);
+  });
+  it("evicted status ink (--red-ink) on panel >= 4.5:1", () => {
+    expect(contrast(token("red-ink"), token("card"))).toBeGreaterThanOrEqual(4.5);
+  });
+  it("amber owing/CTA ink on panel >= 3:1 (large display text)", () => {
+    expect(contrast(token("amber"), token("card"))).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe("Solari typographic discipline", () => {
+  it("declares the three-font system (Archivo Narrow / Archivo / IBM Plex Mono)", () => {
+    for (const f of ["Archivo Narrow", "IBM Plex Mono"]) expect(css).toContain(f);
+    expect(css).toMatch(/--disp\s*:/);
+    expect(css).toMatch(/--mono\s*:/);
+  });
+  it("does NOT use banned reflex fonts as display (no Inter/Space Grotesk in --disp)", () => {
+    const disp = css.match(/--disp\s*:\s*([^;]+);/)?.[1] ?? "";
+    expect(disp).not.toMatch(/Inter|Space Grotesk/i);
+  });
+  it("numbers ride tabular-nums somewhere (countdown/price/ledger)", () => {
+    expect(css).toMatch(/font-variant-numeric:\s*tabular-nums/);
+  });
+});
