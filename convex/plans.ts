@@ -247,6 +247,19 @@ export const seedCreatePlan = mutation({
   },
 });
 
+// Admin repoint (OWNER_SECRET-gated): set a seeded plan's pinned inbox. Empty string ""
+// makes the plan fall back to AGENTMAIL_INBOX_ID (the canonical default-inbox path).
+export const adminSetInbox = mutation({
+  args: { secret: v.string(), slug: v.string(), inboxId: v.string() },
+  handler: async (ctx, args) => {
+    if (args.secret !== process.env.OWNER_SECRET) throw new Error(CODES.OWNER_ONLY);
+    const plan = await ctx.db.query("plans").withIndex("by_slug", (q) => q.eq("slug", args.slug)).unique();
+    if (!plan) throw new Error("plan not found");
+    await ctx.db.patch(plan._id, { inboxId: args.inboxId });
+    return { slug: args.slug, inboxId: args.inboxId };
+  },
+});
+
 export const updateOwnerPrice = mutation({
   args: { planId: v.id("plans"), priceKobo: v.number() },
   handler: async (ctx, args) => {
