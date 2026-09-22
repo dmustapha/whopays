@@ -200,6 +200,8 @@ input:focus-visible, button:focus-visible, summary:focus-visible, a:focus-visibl
 
 /* ------------------------------------------------------------ owner console */
 .console-deck{background:var(--panel-2)}
+.auth-wrap{display:flex; align-items:center; justify-content:center; min-height:72vh}
+.auth-card{width:100%; max-width:400px; margin:0}
 .console-deck input{font-family:var(--mono); font-size:.85rem; background:var(--flap);
   border:1px solid var(--line); border-radius:var(--r-sm); color:var(--text); padding:9px 11px}
 .console-deck ul{list-style:none; padding:0; margin:8px 0}

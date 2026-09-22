@@ -27,7 +27,8 @@ function AuthGate() {
   const [err, setErr] = useState<string | null>(null);
 
   return (
-    <main className="card console-deck">
+    <main className="auth-wrap">
+      <div className="card console-deck auth-card">
       <a className="back" href="#/">← board</a>
       <h2>{flow === "signUp" ? "Create your account" : "Owner sign in"}</h2>
       <p className="muted" style={{ marginTop: 0 }}>
@@ -62,6 +63,7 @@ function AuthGate() {
           {flow === "signUp" ? "Sign in" : "Create an account"}
         </a>
       </p>
+      </div>
     </main>
   );
 }
