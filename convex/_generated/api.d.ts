@@ -10,6 +10,7 @@
 
 import type * as ai from "../ai.js";
 import type * as emailRail from "../emailRail.js";
+import type * as http from "../http.js";
 import type * as lib_parse from "../lib/parse.js";
 import type * as lib_shared from "../lib/shared.js";
 import type * as membership from "../membership.js";
@@ -24,6 +25,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   ai: typeof ai;
   emailRail: typeof emailRail;
+  http: typeof http;
   "lib/parse": typeof lib_parse;
   "lib/shared": typeof lib_shared;
   membership: typeof membership;
