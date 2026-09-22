@@ -15,6 +15,8 @@
 
 [![WhoPays demo](https://img.youtube.com/vi/dd2wJL17vZk/maxresdefault.jpg)](https://youtu.be/dd2wJL17vZk)
 
+**Judges:** every claim is keyless-verifiable — see **[JUDGES.md](JUDGES.md)** (one command: `npm run proof:public`).
+
 ## What Is WhoPays?
 
 Splitting a Spotify Family plan, a shared Starlink, or the office coffee fund always rots into the same problem: someone has to chase everyone, every cycle, forever. WhoPays makes the bill enforce itself.
@@ -53,7 +55,7 @@ Every sponsor is load-bearing: remove it and the product provably breaks. Each a
 
 | Sponsor | Role in WhoPays | Load-bearing proof | Ablation result |
 |---------|-----------------|--------------------|-----------------|
-| **Convex** | The entire spine: schema, realtime board, transactional cycle engine, auth, HTTP router, static hosting | 39 functions; per-plan ownership gates; static SPA served from `*.convex.site` | product has no backend |
+| **Convex** | The entire spine: schema, realtime board, transactional cycle engine, auth, HTTP router, static hosting | 44 functions; per-plan ownership gates; static SPA served from `*.convex.site` | product has no backend |
 | **Firecrawl** | Live NG-geo crawl of the public price page into per-seat dues (`convex/prices.ts`) | real crawl returns `priceKobo: 250000` with `sourceUrl` + timestamp | crawl dies, board holds last snapshot, never fabricates a price |
 | **AgentMail** | The member's **entire interface**: dues out, replies in, all through one budget-checked chokepoint (`convex/emailRail.ts`) | real SES send delivered; inbound arrives as a **signed Svix webhook** (`convex/http.ts`); forged POST → 401 | members unreachable, there is no product |
 | **OpenAI** (`gpt-4o-mini`) | Reconciles free-text replies and parses forwarded bank alerts into a payment status, degrading to `pending_parse` rather than inventing an amount (`convex/ai.ts`) | real extraction pinned; never fabricates a number | reconciliation dies, deterministic `PAID` pre-classifier keeps the kill-shot intact |
@@ -88,7 +90,7 @@ Full threat matrix in `SECURITY.md`.
 
 WhoPays uses Convex as the whole system, not a database:
 
-- **Schema + indexes:** 12 tables (plans, seats, waitlist, cycles, payments, priceSnapshots, events, emailLog, sendBudget, and more) with per-owner and per-email indexes (`convex/schema.ts`).
+- **Schema + indexes:** 14 tables (plans, seats, waitlist, cycles, payments, priceSnapshots, events, emailLog, sendBudget, and more) with per-owner and per-email indexes (`convex/schema.ts`).
 - **Queries / mutations / actions:** reactive board queries, transactional cycle mutations, sponsor-adapter actions (`convex/plans.ts`, `convex/cycles.ts`, `convex/prices.ts`, `convex/ai.ts`).
 - **HTTP actions:** signed AgentMail webhook, `/api/build-info` provenance, `/api/proof` machine-readable proof, static-site catch-all (`convex/http.ts`).
 - **Scheduled functions + crons:** one-minute heartbeat driving cycle close, weekly price watch, keep-alive (`convex/crons.ts`).

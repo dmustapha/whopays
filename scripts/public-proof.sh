@@ -8,7 +8,7 @@ set -euo pipefail
 export LC_ALL=en_US.UTF-8   # thousands separator in printf %'d (DS-14 figure render)
 
 PUBLIC_URL="https://www.spotify.com/ng/premium/"
-SITE_HOST="${SITE_HOST:-resilient-goose-83.convex.site}"
+SITE_HOST="${SITE_HOST:-beloved-minnow-486.convex.site}"
 
 # --- derive the expected figure from our board's displayed priceKobo (the crawled hero plan) ---
 PROOF_JSON=$(curl -s --max-time 20 "https://${SITE_HOST}/api/proof" || true)
