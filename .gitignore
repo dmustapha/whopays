@@ -68,3 +68,10 @@ STRESS-TEST*.md
 public/video/
 video/out/
 video/audio/
+
+# internal pipeline/package artifacts — never publish
+RECORDING-DIRECTIVES.md SUBMISSION-GUIDE.md SUBMISSION_STATUS.md SUBMITTED.lock docs/pipeline/SHIP-CHECK-LOG.md video/EDIT-NOTES.txt video/NARRATION.md video/verification.json CLAIMS.md
+RUN-OVERLAY.md
+*-state.json
+.*-state.json
+pipeline-log.md
