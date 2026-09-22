@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "postinstall": "node scripts/patch-agentmail-env.mjs",
     "dev": "vite",
     "dev:backend": "convex dev",
     "build": "tsc -b && vite build",
