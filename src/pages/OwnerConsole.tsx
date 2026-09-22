@@ -41,6 +41,7 @@ function AuthGate() {
           try {
             await signIn("password", { email, password, flow });
           } catch (e: any) {
+            console.error("[auth] signIn failed", e);
             setErr(flow === "signUp" ? "Couldn't create the account — try a different email or a stronger password." : "Wrong email or password.");
           } finally {
             setBusy(false);
@@ -102,8 +103,8 @@ function Console() {
             <li key={q.seatId} style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
               <span><strong>{q.planName}</strong> · {q.label} · {q.state === "late_reported" ? "late payment reported" : "owing"}</span>
               {q.state === "late_reported"
-                ? <button onClick={() => reinstate({ seatId: q.seatId })}>reinstate</button>
-                : <button onClick={() => confirm({ seatId: q.seatId })}>mark paid (owner confirm)</button>}
+                ? <button onClick={async () => { try { await reinstate({ seatId: q.seatId }); } catch (e) { console.error(e); setNote("Couldn't reinstate that seat — try again."); } }}>reinstate</button>
+                : <button onClick={async () => { try { await confirm({ seatId: q.seatId }); } catch (e) { console.error(e); setNote("Couldn't confirm that seat — try again."); } }}>mark paid (owner confirm)</button>}
             </li>
           ))}
         </ul>
@@ -131,7 +132,7 @@ function Console() {
               <button onClick={() => { navigator.clipboard?.writeText(`${origin}/#/plan/${p.slug}`); setNote(`Share link copied for "${p.name}" — send it to add others.`); }}
                       style={{ background: "transparent", color: "var(--amber)", border: "1px solid var(--line)" }}>copy invite link</button>
               {p.kind === "crawled" && (
-                <button onClick={async () => { const r = await scrape({ planId: p._id }); setNote(JSON.stringify(r)); }}>re-crawl price</button>
+                <button onClick={async () => { try { const r = await scrape({ planId: p._id }); setNote(r.ok ? `re-crawled: ₦${Math.floor((r.priceKobo ?? 0) / 100).toLocaleString()}` : `crawl kept cache: ${r.reason}`); } catch (e) { console.error(e); setNote("Re-crawl failed — try again."); } }}>re-crawl price</button>
               )}
               {p.kind === "ownerEntered" && (
                 <span style={{ display: "inline-flex", gap: 6 }}>
@@ -140,8 +141,10 @@ function Console() {
                   <button onClick={async () => {
                     const naira = parseFloat(priceEdit.naira);
                     if (!Number.isFinite(naira) || naira <= 0) { setNote("enter a valid price in ₦"); return; }
-                    const r = await updatePrice({ planId: p._id, priceKobo: Math.round(naira * 100) });
-                    setNote(`price ${r.old} → ${r.next} (owner-updated)`);
+                    try {
+                      const r = await updatePrice({ planId: p._id, priceKobo: Math.round(naira * 100) });
+                      setNote(`price ₦${Math.floor(r.old / 100).toLocaleString()} → ₦${Math.floor(r.next / 100).toLocaleString()} (owner-updated)`);
+                    } catch (e) { console.error(e); setNote("Couldn't update the price — check it's within range and try again."); }
                   }}>update</button>
                 </span>
               )}
@@ -166,11 +169,14 @@ function AddPlanByUrl({ onNote }: { onNote: (s: string) => void }) {
         <input placeholder="public pricing page URL" value={url} onChange={(e) => setUrl(e.target.value)} style={{ flex: 1, minWidth: 240 }} />
         <input placeholder="seats" value={seats} onChange={(e) => setSeats(e.target.value)} style={{ width: 70 }} aria-label="seats" />
         <button onClick={async () => {
+          if (!url.trim()) { onNote("paste a public pricing page URL first"); return; }
           onNote("crawling…");
-          const r = await extract({ url });
-          if (!r.ok) { onNote(`crawl failed: ${r.reason}`); return; }
-          const cands = r.candidates ?? [];
-          setCandidates(cands); onNote(`${cands.length} plan(s) extracted — pick one`);
+          try {
+            const r = await extract({ url });
+            if (!r.ok) { onNote(`crawl failed: ${r.reason}`); return; }
+            const cands = r.candidates ?? [];
+            setCandidates(cands); onNote(`${cands.length} plan(s) extracted — pick one`);
+          } catch (e) { console.error(e); onNote("crawl failed — the page may be unreachable; try another URL."); }
         }}>crawl & extract</button>
       </div>
       <ul>
@@ -179,12 +185,14 @@ function AddPlanByUrl({ onNote }: { onNote: (s: string) => void }) {
             {c.plan_name} — ₦{Math.floor(c.priceKobo / 100).toLocaleString()}
             <button onClick={async () => {
               const slug = c.plan_name.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40);
-              await createPlan({
-                slug, name: c.plan_name, kind: "crawled", sourceUrl: url,
-                priceKobo: c.priceKobo, seatsTotal: parseInt(seats) || 4, cycleMinutes: 30 * 24 * 60,
-                anchorReadOnly: false, inboxId: "",
-              });
-              onNote(`plan "${c.plan_name}" is live — open Your plans below to copy its invite link`); setCandidates([]);
+              try {
+                await createPlan({
+                  slug, name: c.plan_name, kind: "crawled", sourceUrl: url,
+                  priceKobo: c.priceKobo, seatsTotal: parseInt(seats) || 4, cycleMinutes: 30 * 24 * 60,
+                  anchorReadOnly: false, inboxId: "",
+                });
+                onNote(`plan "${c.plan_name}" is live — open Your plans below to copy its invite link`); setCandidates([]);
+              } catch (e) { console.error(e); onNote("Couldn't create that plan — its price may be out of range; try another."); }
             }}>add this plan</button>
           </li>
         ))}

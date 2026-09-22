@@ -9,6 +9,8 @@
  */
 
 import type * as ai from "../ai.js";
+import type * as auth from "../auth.js";
+import type * as authSpike from "../authSpike.js";
 import type * as crons from "../crons.js";
 import type * as cycles from "../cycles.js";
 import type * as emailRail from "../emailRail.js";
@@ -28,6 +30,8 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   ai: typeof ai;
+  auth: typeof auth;
+  authSpike: typeof authSpike;
   crons: typeof crons;
   cycles: typeof cycles;
   emailRail: typeof emailRail;

@@ -121,7 +121,7 @@ export const routeInbound = internalAction({
     let seat = args.threadId
       ? await ctx.runQuery(internal.emailRail.findSeatByThread, { threadId: args.threadId })
       : null;
-    if (!seat) seat = await ctx.runQuery(internal.emailRail.findSeatByEmail, { email: extractAddress(args.from) });
+    if (!seat) seat = await ctx.runQuery(internal.emailRail.findSeatByEmail, { email: extractAddress(args.from), inboxId: args.inboxId });
     if (!seat) {
       await ctx.runMutation(internal.emailRail.stashUnrecognized, {
         messageId: args.messageId, inboxId: args.inboxId, topText: top.slice(0, 500),
@@ -143,11 +143,22 @@ export const routeInbound = internalAction({
 });
 
 export const findSeatByEmail = internalQuery({
-  args: { email: v.string() },
+  args: { email: v.string(), inboxId: v.string() },
   handler: async (ctx, args) => {
-    // Single indexed lookup (peer-review ADOPT — no per-plan fan-out).
-    const seat = await ctx.db.query("seats")
-      .withIndex("by_email", (q) => q.eq("memberEmail", args.email)).first();
+    // Multi-tenant: a reply must credit a seat on the plan that OWNS the inbox it arrived at —
+    // never the first global match for that address (which could be another tenant's seat).
+    // Normalize "" → env default exactly as the send rail resolves inboxes (enqueueSend).
+    const defaultInbox = process.env.AGENTMAIL_INBOX_ID ?? "";
+    const inboxPlanIds = new Set(
+      (await ctx.db.query("plans").collect())
+        .filter((p) => (p.inboxId && p.inboxId !== "" ? p.inboxId : defaultInbox) === args.inboxId)
+        .map((p) => p._id),
+    );
+    if (inboxPlanIds.size === 0) return null;
+    // Match the address only within this inbox's plans (composite index, tenant-scoped).
+    const seats = await ctx.db.query("seats")
+      .withIndex("by_email", (q) => q.eq("memberEmail", args.email)).collect();
+    const seat = seats.find((s) => inboxPlanIds.has(s.planId));
     return seat ? { planId: seat.planId, seatId: seat._id } : null;
   },
 });
