@@ -10,6 +10,8 @@
 
 import type * as lib_parse from "../lib/parse.js";
 import type * as lib_shared from "../lib/shared.js";
+import type * as membership from "../membership.js";
+import type * as plans from "../plans.js";
 
 import type {
   ApiFromModules,
@@ -20,6 +22,8 @@ import type {
 declare const fullApi: ApiFromModules<{
   "lib/parse": typeof lib_parse;
   "lib/shared": typeof lib_shared;
+  membership: typeof membership;
+  plans: typeof plans;
 }>;
 
 /**
