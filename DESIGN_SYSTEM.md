@@ -1,6 +1,6 @@
 # DESIGN_SYSTEM.md — WhoPays · Direction A "Solari"
 
-The durable design contract consumed by build, stress, demo-video, and deploy.
+The durable design contract the design contract for the app.
 Extracted from the shipped code (`src/styles.css`, `index.html`) — every value here is
 literally in use, not aspirational. Token names are contract-locked by `tests/design.test.ts`.
 Exact-value implementation spec: `whopays/DESIGN_SPEC.md`.
@@ -9,7 +9,7 @@ Exact-value implementation spec: `whopays/DESIGN_SPEC.md`.
 - **World statement.** A split-flap departure board: money-truth posted in public, consequences on a clock.
 - **Accent color.** Amber `#f0a92e` — the single AUTHORITY hue. It marks the countdown, the amount owing, and every call-to-action. Nothing else competes for it.
 - **Signature element.** The **split-flap seat card** — a recessed flap face with three honest states (owing / paid ✓ / evicted) that physically flips (`rotateX`) the instant real Convex state changes. The flip IS the product; it appears nowhere as decoration.
-- **Invariant phrase (EX-10).** **"The scheduler doesn't negotiate."** — the deepest guarantee stated as narrative: an unpaid seat at cycle close is evicted and the waitlist promoted, automatically, with no appeal. Reused verbatim in the README, DEMO-RUN-SHEET, and PRD. Product tagline: *"Watch a bill enforce itself."*
+- **Invariant phrase.** **"The scheduler doesn't negotiate."** — the deepest guarantee stated as narrative: an unpaid seat at cycle close is evicted and the waitlist promoted, automatically, with no appeal. Reused verbatim in the README. Product tagline: *"Watch a bill enforce itself."*
 
 ## Tokens
 
@@ -47,7 +47,7 @@ Split-flap faces are *inset*, never floating. Only two elevation shadows exist:
 - `--el-2: 0 6px 20px rgba(0,0,0,.45)` — the single panel lift (hero board only).
 - `--seam: inset 0 1px 0 rgba(255,255,255,.03), inset 0 -8px 16px rgba(0,0,0,.5)` — the seat's recessed flap-fold.
 
-### Ready-to-paste `@theme` block (EX-10)
+### Ready-to-paste `@theme` block
 This project ships plain CSS custom properties (Vite + React, not Tailwind v4). Adopt the system by pasting this `:root` block — it is the verbatim contract in `src/styles.css`. Dark-only by design (a departure board has no light mode).
 
 ```css

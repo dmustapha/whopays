@@ -44,7 +44,7 @@ seed-created members: 0 (all occupancy has an event trail) — PASS
 $ npm run audit:pii
 PASS getEventLog / getEmailLedger / getSendBudget / getBoard / getUnrecognized: no address shapes
 ```
-The seed creates zero members (NN-1) — every seat's life is earned by a real join. No member email ever appears in a public payload (NN-4).
+The seed creates zero members — every seat's life is earned by a real join. No member email ever appears in a public payload.
 
 ## Recompute verifier (numbers are earned, not typed)
 ```
