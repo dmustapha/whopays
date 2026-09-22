@@ -8,13 +8,19 @@
  * @module
  */
 
+import type * as lib_parse from "../lib/parse.js";
+import type * as lib_shared from "../lib/shared.js";
+
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
 } from "convex/server";
 
-declare const fullApi: ApiFromModules<{}>;
+declare const fullApi: ApiFromModules<{
+  "lib/parse": typeof lib_parse;
+  "lib/shared": typeof lib_shared;
+}>;
 
 /**
  * A utility for referencing Convex functions in your app's public API.
