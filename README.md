@@ -120,6 +120,8 @@ Or run the bundled proof, which re-derives the figure from the live board's `/ap
 SITE_HOST=resilient-goose-83.convex.site npm run proof:public     # → PUBLIC PROOF: PASS
 ```
 
+> Every command above passes from a clean clone with no extra flags.
+
 ## Status Legend
 
 Color carries meaning; nothing is decorative (`brand.json`).
