@@ -260,6 +260,30 @@ export const adminSetInbox = mutation({
   },
 });
 
+// Admin reset (OWNER_SECRET-gated): restore a plan's board to the pristine seeded-empty
+// state — every non-owner seat back to empty, waitlist cleared. For demo staging only.
+export const adminResetBoard = mutation({
+  args: { secret: v.string(), slug: v.string() },
+  handler: async (ctx, args) => {
+    if (args.secret !== process.env.OWNER_SECRET) throw new Error(CODES.OWNER_ONLY);
+    const plan = await ctx.db.query("plans").withIndex("by_slug", (q) => q.eq("slug", args.slug)).unique();
+    if (!plan) throw new Error("plan not found");
+    const seats = await ctx.db.query("seats").withIndex("by_plan", (q) => q.eq("planId", plan._id)).collect();
+    let cleared = 0;
+    for (const s of seats) {
+      if (s.ownerEnrolled) continue;
+      await ctx.db.patch(s._id, {
+        state: "active_unpaid", displayLabel: seatLabel(s.index),
+        memberEmail: undefined, joinedAt: undefined, paidAt: undefined,
+      });
+      cleared++;
+    }
+    const wl = await ctx.db.query("waitlist").withIndex("by_plan_position", (q) => q.eq("planId", plan._id)).collect();
+    for (const w of wl) await ctx.db.delete(w._id);
+    return { slug: args.slug, seatsCleared: cleared, waitlistCleared: wl.length };
+  },
+});
+
 export const updateOwnerPrice = mutation({
   args: { planId: v.id("plans"), priceKobo: v.number() },
   handler: async (ctx, args) => {
