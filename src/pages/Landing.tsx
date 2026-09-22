@@ -10,25 +10,42 @@ export default function Landing() {
   const anchor = plans?.find((p: any) => p.anchorReadOnly);
   return (
     <main>
-      <header className="hero">
-        <h1>WhoPays</h1>
-        <p className="pitch">
-          A live ledger for any bill a group shares. Real prices crawled from the source,
-          members run entirely by email, and a scheduler that evicts unpaid seats — live, below.
-        </p>
+      <header className="mast hero">
+        <div className="mark">
+          <span className="glyph" aria-hidden="true" />
+          <div>
+            <h1>WhoPays</h1>
+            <p className="pitch">
+              A live board for any bill a group shares. Real prices crawled from the source,
+              members run entirely by email, and a scheduler that evicts the unpaid seat and
+              promotes the next in line — on a clock, in public.
+            </p>
+          </div>
+        </div>
+        <span className="livechip">Departures · Live</span>
       </header>
       <Board slug="spotify-family-demo" />
       {/* [CRITIQUE E-3] presentational recap of the most recent real cycle consequences */}
       <LastCycleRecap slug="spotify-family-demo" />
       <div className="grid">
-        <EventLog slug="spotify-family-demo" />
         <div>
-          {anchor && <Board slug={anchor.slug} />}
+          <div className="rail"><span className="rail-label">Ledger · live event log</span></div>
+          <EventLog slug="spotify-family-demo" />
+        </div>
+        <div>
+          {anchor && (
+            <>
+              <div className="rail"><span className="rail-label">Anchor · owner's real bill</span></div>
+              <Board slug={anchor.slug} />
+            </>
+          )}
+          <div className="rail"><span className="rail-label">Send budget</span></div>
           <BudgetMeter />
         </div>
       </div>
+      <div className="rail"><span className="rail-label">Email · outbound &amp; inbound</span></div>
       <EmailLedger />
-      <footer className="muted">
+      <footer>
         <a href="#/proof">proof</a> · <a href="https://github.com/dmustapha/whopays" target="_blank" rel="noreferrer">repo</a> ·
         payments are <em>matched</em> from replies and confirmed by the owner — nothing stronger is ever claimed ·
         prices trace to public pages with timestamps · built on Convex + OpenAI + Firecrawl + AgentMail

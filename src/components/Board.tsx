@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
@@ -19,6 +19,27 @@ export default function Board({ slug }: { slug: string }) {
   const [email, setEmail] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // SOLARI signature: when a seat's real state changes (evict/promote/paid), flap it.
+  const prevStates = useRef<Record<string, string>>({});
+  const [flipping, setFlipping] = useState<Record<string, boolean>>({});
+  const seatList: any[] = (board && board !== null ? (board as any).seats : []) ?? [];
+  useEffect(() => {
+    const next: Record<string, boolean> = {};
+    for (const s of seatList) {
+      const was = prevStates.current[s._id];
+      if (was !== undefined && was !== s.state) next[s._id] = true;
+      prevStates.current[s._id] = s.state;
+    }
+    if (Object.keys(next).length) {
+      setFlipping((f) => ({ ...f, ...next }));
+      const ids = Object.keys(next);
+      const t = setTimeout(() => setFlipping((f) => {
+        const c = { ...f }; ids.forEach((id) => delete c[id]); return c;
+      }), 600);
+      return () => clearTimeout(t);
+    }
+  }, [seatList.map((s) => `${s._id}:${s.state}`).join(",")]);
 
   if (board === undefined) return <div className="card">Loading the live board…</div>;
   if (board === null) return <div className="card">No such plan.</div>;
@@ -77,7 +98,7 @@ export default function Board({ slug }: { slug: string }) {
           const occupied = s.state !== "evicted" && s.joinedAt != null;
           const empty = !occupied && s.state === "active_unpaid" && s.joinedAt == null;
           return (
-            <div key={s._id} role="listitem" className={`seat ${s.state}${empty ? " empty" : ""}`}>
+            <div key={s._id} role="listitem" className={`seat ${s.state}${empty ? " empty" : ""}${flipping[s._id] ? " flip" : ""}`}>
               <span className="seat-label">{s.displayLabel}</span>
               <span className="seat-state">
                 {empty && "empty — join to claim"}

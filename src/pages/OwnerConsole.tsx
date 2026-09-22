@@ -18,7 +18,7 @@ export default function OwnerConsole() {
 
   if (!token) {
     return (
-      <main className="card">
+      <main className="card console-deck">
         <h2>Owner console</h2>
         <form onSubmit={async (e) => { e.preventDefault();
           try { const r = await login({ secret }); sessionStorage.setItem("ownerToken", r.token); setToken(r.token); }
@@ -35,7 +35,7 @@ export default function OwnerConsole() {
   return (
     <main>
       <a className="back" href="#/">← board</a>
-      <div className="card">
+      <div className="card console-deck">
         <h2>Owner console</h2>
         <h3>Seats needing you</h3>
         <ul>
