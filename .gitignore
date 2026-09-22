@@ -63,3 +63,5 @@ submission/social-post.md
 .crossmodel-gate/
 DEBUG-REPORT*.md
 STRESS-TEST*.md
+.ship-check.json
+.deploy-state.json
