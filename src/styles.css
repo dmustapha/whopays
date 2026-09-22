@@ -248,3 +248,8 @@ footer a{color:var(--amber)}
   *,*::before,*::after{animation:none !important; transition:none !important}
   .skel::after{display:none}
 }
+
+/* brand wordmark (masthead lockup) */
+.brand{margin:0; line-height:0}
+.brandmark{height:58px; width:auto; display:block}
+.mast.hero .brandmark{height:66px}
