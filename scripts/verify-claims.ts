@@ -4,6 +4,10 @@ import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convex/_generated/api";
 import { writeFileSync, readFileSync, existsSync } from "node:fs";
 
+// DEV-P6-1: self-load .env.local so `npm run verify:claims` works without an external flag
+// (mirrors scripts/seed-demo.ts + the audit scripts).
+try { (process as any).loadEnvFile?.(".env.local"); } catch { /* env may already be injected */ }
+
 const client = new ConvexHttpClient(process.env.VITE_CONVEX_URL!);
 
 async function main() {

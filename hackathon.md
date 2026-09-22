@@ -8,11 +8,11 @@
 - **Frontend:** Convex static hosting
 - **Convex deployment:** https://resilient-goose-83.convex.cloud
 - **Components:** @agentmail/convex, @firecrawl/firecrawl-convex, @convex-dev/static-hosting
-- **Convex features:** schema, indexes, queries, mutations, actions, HTTP actions, scheduled functions, crons, realtime queries
+- **Convex features:** schema, indexes, queries, mutations, actions, HTTP actions, scheduled functions, crons, realtime queries, file storage (static hosting)
 - **Auth:** none
 - **AI models:** gpt-4o-mini
 - **Started:** 2026-09-22T06:35:00Z
-- **Last updated:** 2026-09-22T07:32:00Z
+- **Last updated:** 2026-09-22T07:56:00Z
 
 ## Log
 
@@ -36,3 +36,9 @@ Registered the three sponsor components and wired the two adapter surfaces: the 
 
 ### 2026-09-22 - fc37c49
 Built the price-intelligence spine (a live NG-geo crawl of the public Spotify price page → a stored snapshot with source URL and timestamp → per-seat dues) and the cycle engine — one transactional mutation that, at each deadline, evicts the unpaid seat, promotes the next person in the waitlist, closes the cycle and opens the next, driven by a one-minute cron heartbeat with a weekly price watch and a keep-alive. The race between two waitlisters for one freed seat is covered by an optimistic-concurrency test, and the send-budget thresholds by another. Then the whole loop was proven live end to end on the cloud deployment: someone joins with only an email, the scheduler seats them, a dues email goes out, they reply "PAID", the reply routes back through the signed webhook, and their seat turns green — with no login anywhere. Convex features: crons, scheduled functions, optimistic concurrency, realtime queries (`convex/prices.ts`, `convex/pricesDb.ts`, `convex/cycles.ts`, `convex/crons.ts`).
+
+### 2026-09-22 - 436d1f9
+Built the live board frontend — a seat map with a countdown, the append-only event log, the in-product email ledger (sender addresses redacted), and a send-budget meter, plus a plan page, an owner console, and a proof page — all bound directly to the deployment through realtime queries, so every screen updates the instant the backend changes. An idle board still reads clearly to a first-time visitor: it shows the "join to start the next cycle" invitation and a recap of the last real cycle. A seed script performs a genuine price crawl, is idempotent, and creates zero members, so the board's life is only ever earned by real joins. Deploy provenance is baked so the build-info endpoint reports the exact commit that is running (`src/`, `scripts/seed-demo.ts`).
+
+### 2026-09-22 - working tree
+Added the proof pack: realness and PII audits (the seed creates zero members; no email address ever appears in a public payload), a banned-term copy test wired into the suite (payments are only ever "matched", never "verified"; no login-sharing language; no hardcoded prices), sponsor ablations that each break the product when their key is invalid (no crawl without Firecrawl, no member interface without AgentMail, no reconciliation without OpenAI), and a recompute verifier that re-derives every headline number from the live deployment and fails on a wrong figure. A domain guide documents the concepts, rules, and glossary (`scripts/`, `tests/copy.test.ts`, `DOMAIN-GUIDE.md`).
