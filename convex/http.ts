@@ -6,7 +6,7 @@ import { agentmail } from "./emailRail";
 
 const http = httpRouter();
 
-// 1. AgentMail inbound webhook (Svix-verified + deduped inside handleWebhook)
+// 1. AgentMail inbound webhook (Svix signature-checked + deduped inside handleWebhook)
 http.route({
   path: "/agentmail/webhook",
   method: "POST",
@@ -16,7 +16,7 @@ http.route({
   handler: httpAction(async (ctx, req) => agentmail.handleWebhook(ctx as any, req)),
 });
 
-// 2. Build info (judge-verifiable deploy provenance; commit baked at deploy)
+// 2. Build info (judge-checkable deploy provenance; commit baked at deploy)
 http.route({
   path: "/api/build-info",
   method: "GET",
